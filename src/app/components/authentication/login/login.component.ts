@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { LoginService } from '../../../services/auth/login.service';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -12,7 +13,7 @@ import { LoginService } from '../../../services/auth/login.service';
 export class LoginComponent {
   loginForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private loginService: LoginService) {
+  constructor(private fb: FormBuilder, private loginService: LoginService, private router:Router) {
     this.loginForm = this.fb.group({
       username: ['', [Validators.required]],
       password: ['', [Validators.required, Validators.minLength(6)]],
@@ -30,7 +31,7 @@ export class LoginComponent {
     this.loginService.loginUser(this.loginForm.value).subscribe({
       next: (res) => {
         console.log(res);  
-       
+       this.router.navigate(['/home']);
 
       },
       error: (err) => {
