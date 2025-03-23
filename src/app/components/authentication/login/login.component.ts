@@ -31,7 +31,11 @@ export class LoginComponent {
     this.loginService.loginUser(this.loginForm.value).subscribe({
       next: (res) => {
         console.log(res);  
+        localStorage.setItem('access_token', res.access);
+        localStorage.setItem('refresh_token', res.refresh);
+
        this.router.navigate(['/home']);
+
 
       },
       error: (err) => {

@@ -9,5 +9,12 @@ import { MaterialModule } from '../../../shared-imports/imports';
   styleUrl: './home.component.css'
 })
 export class HomeComponent {
+    constructor(){
+      
+    }
 
-}
+    ngOnInit(){
+      console.log(localStorage.getItem('access_token'));
+      console.log(localStorage.getItem('refresh_token'));
+    }
+} 
