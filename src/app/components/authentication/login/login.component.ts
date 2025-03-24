@@ -12,6 +12,8 @@ import { Router } from '@angular/router';
 })
 export class LoginComponent {
   loginForm: FormGroup;
+  credIncorrect:boolean = false;
+  addingCred:boolean = false;
 
   constructor(private fb: FormBuilder, private loginService: LoginService, private router:Router) {
     this.loginForm = this.fb.group({
@@ -27,6 +29,8 @@ export class LoginComponent {
     }
   }
   login() {
+    this.credIncorrect= false
+    this.addingCred =true
     console.log(this.loginForm.value)
     this.loginService.loginUser(this.loginForm.value).subscribe({
       next: (res) => {
@@ -36,10 +40,13 @@ export class LoginComponent {
 
        this.router.navigate(['/home']);
 
-
+       this.addingCred =false
       },
       error: (err) => {
         console.error("Login failed:", err);
+        this.credIncorrect= true
+
+        this.addingCred =false
       }
     });
   }
