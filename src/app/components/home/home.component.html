@@ -3,45 +3,97 @@
 </nav>
 
 <br><br>
-    bt
+    
 
 <mat-tab-group>
     <mat-tab label="Receipts"> 
 
         <br><br>
-
         <div class="mat-elevation-z8">
-            <table mat-table [dataSource]="dataUsersSource">  
+            <table mat-table [dataSource]="dataReceiptSource">
         
-            <!-- Position Column -->
-            <ng-container matColumnDef="position">
-                <th mat-header-cell *matHeaderCellDef> No. </th>
-                <td mat-cell *matCellDef="let element"> {{element.position}} </td>
+       
+            <ng-container matColumnDef="receipt_number">
+                <th mat-header-cell *matHeaderCellDef> Receipt Number. </th>
+                <td mat-cell *matCellDef="let element"> {{element.receipt_number}} </td>
             </ng-container>
         
-            <!-- Name Column -->
-            <ng-container matColumnDef="name">
-                <th mat-header-cell *matHeaderCellDef> Name </th>
-                <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+     
+            <ng-container matColumnDef="total_amount">
+                <th mat-header-cell *matHeaderCellDef> Total Amount </th>
+                <td mat-cell *matCellDef="let element"> {{element.total_amount}} </td>
             </ng-container>
         
-            <!-- Weight Column -->
-            <ng-container matColumnDef="weight">
-                <th mat-header-cell *matHeaderCellDef> Weight </th>
-                <td mat-cell *matCellDef="let element"> {{element.weight}} </td>
+       
+            <ng-container matColumnDef="monthly_rent">
+                <th mat-header-cell *matHeaderCellDef> Monthly Rent </th>
+                <td mat-cell *matCellDef="let element"> {{element.monthly_rent}} </td>
             </ng-container>
         
-            <!-- Symbol Column -->
-            <ng-container matColumnDef="symbol">
-                <th mat-header-cell *matHeaderCellDef> Symbol </th>
-                <td mat-cell *matCellDef="let element"> {{element.symbol}} </td>
+        
+            <ng-container matColumnDef="rental_deposit">
+                <th mat-header-cell *matHeaderCellDef> Rental Deposit </th>
+                <td mat-cell *matCellDef="let element"> {{element.rental_deposit}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="electricity_deposit">
+                <th mat-header-cell *matHeaderCellDef> Electiricty Deposit. </th>
+                <td mat-cell *matCellDef="let element"> {{element.electricity_deposit}} </td>
             </ng-container>
         
-            <tr mat-header-row *matHeaderRowDef="displayedUserColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedUserColumns;"></tr>
+     
+            <ng-container matColumnDef="electricity_bill">
+                <th mat-header-cell *matHeaderCellDef> Electricity Bill </th>
+                <td mat-cell *matCellDef="let element"> {{element.electricity_bill}} </td>
+            </ng-container>
+        
+       
+            <ng-container matColumnDef="water_deposit">
+                <th mat-header-cell *matHeaderCellDef> Water Deposit </th>
+                <td mat-cell *matCellDef="let element"> {{element.water_deposit}} </td>
+            </ng-container>
+        
+        
+            <ng-container matColumnDef="water_bill">
+                <th mat-header-cell *matHeaderCellDef> Water Bill </th>
+                <td mat-cell *matCellDef="let element"> {{element.water_bill}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="service_charge">
+                <th mat-header-cell *matHeaderCellDef> Service Charge. </th>
+                <td mat-cell *matCellDef="let element"> {{element.service_charge}} </td>
+            </ng-container>
+        
+     
+            <ng-container matColumnDef="security_charge">
+                <th mat-header-cell *matHeaderCellDef> Security Charge </th>
+                <td mat-cell *matCellDef="let element"> {{element.security_charge}} </td>
+            </ng-container>
+        
+       
+            <ng-container matColumnDef="previous_balance">
+                <th mat-header-cell *matHeaderCellDef> Previous Balance </th>
+                <td mat-cell *matCellDef="let element"> {{element.previous_balance}} </td>
+            </ng-container>
+        
+        
+            <ng-container matColumnDef="date_issued">
+                <th mat-header-cell *matHeaderCellDef> Date Issued </th>
+                <td mat-cell *matCellDef="let element"> {{element.date_issued}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="other_charges">
+                <th mat-header-cell *matHeaderCellDef> Other Charges. </th>
+                <td mat-cell *matCellDef="let element"> {{element.other_charges}} </td>
+            </ng-container>
+        
+ 
+        
+            <tr mat-header-row *matHeaderRowDef="displayedReceiptColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedReceiptColumns;"></tr>
             </table>
         
-            <mat-paginator  #paginator [pageSizeOptions]="[5, 10, 20]"
+            <mat-paginator #paginator3 [pageSizeOptions]="[5, 10, 20]"
                         showFirstLastButtons
                         aria-label="Select page of periodic elements">
             </mat-paginator>
@@ -55,28 +107,28 @@
         <div class="mat-elevation-z8">
             <table mat-table [dataSource]="dataHousesSource">
         
-            <!-- Position Column -->
-            <ng-container matColumnDef="position">
-                <th mat-header-cell *matHeaderCellDef> No. </th>
-                <td mat-cell *matCellDef="let element"> {{element.position}} </td>
+       
+            <ng-container matColumnDef="id">
+                <th mat-header-cell *matHeaderCellDef> ID. </th>
+                <td mat-cell *matCellDef="let element"> {{element.id}} </td>
             </ng-container>
         
-            <!-- Name Column -->
-            <ng-container matColumnDef="name">
-                <th mat-header-cell *matHeaderCellDef> Name </th>
-                <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+     
+            <ng-container matColumnDef="house_number">
+                <th mat-header-cell *matHeaderCellDef> House Number </th>
+                <td mat-cell *matCellDef="let element"> {{element.house_number}} </td>
             </ng-container>
         
-            <!-- Weight Column -->
-            <ng-container matColumnDef="weight">
-                <th mat-header-cell *matHeaderCellDef> Weight </th>
-                <td mat-cell *matCellDef="let element"> {{element.weight}} </td>
+       
+            <ng-container matColumnDef="due_date">
+                <th mat-header-cell *matHeaderCellDef> Due Date </th>
+                <td mat-cell *matCellDef="let element"> {{element.due_date}} </td>
             </ng-container>
         
-            <!-- Symbol Column -->
-            <ng-container matColumnDef="symbol">
-                <th mat-header-cell *matHeaderCellDef> Symbol </th>
-                <td mat-cell *matCellDef="let element"> {{element.symbol}} </td>
+        
+            <ng-container matColumnDef="rent_amount">
+                <th mat-header-cell *matHeaderCellDef> Rent Amount </th>
+                <td mat-cell *matCellDef="let element"> {{element.rent_amount}} </td>
             </ng-container>
         
             <tr mat-header-row *matHeaderRowDef="displayedHosesColumns"></tr>
@@ -93,42 +145,42 @@
     <mat-tab label="Users"> 
 
         <br><br>
+
         <div class="mat-elevation-z8">
-            <table mat-table [dataSource]="dataReceiptSource">
-        
-            <!-- Position Column -->
-            <ng-container matColumnDef="position">
-                <th mat-header-cell *matHeaderCellDef> No. </th>
-                <td mat-cell *matCellDef="let element"> {{element.position}} </td>
+            <table mat-table [dataSource]="dataUsersSource">  
+
+            <ng-container matColumnDef="id">
+                <th mat-header-cell *matHeaderCellDef> ID. </th>
+                <td mat-cell *matCellDef="let element"> {{element.id}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="username">
+                <th mat-header-cell *matHeaderCellDef> User Name </th>
+                <td mat-cell *matCellDef="let element"> {{element.username}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="national_id">
+                <th mat-header-cell *matHeaderCellDef> National ID </th>
+                <td mat-cell *matCellDef="let element"> {{element.national_id}} </td>
+            </ng-container>
+
+            <ng-container matColumnDef="phone_number">
+                <th mat-header-cell *matHeaderCellDef> Phone Number </th>
+                <td mat-cell *matCellDef="let element"> {{element.phone_number}} </td>
             </ng-container>
         
-            <!-- Name Column -->
-            <ng-container matColumnDef="name">
-                <th mat-header-cell *matHeaderCellDef> Name </th>
-                <td mat-cell *matCellDef="let element"> {{element.name}} </td>
-            </ng-container>
-        
-            <!-- Weight Column -->
-            <ng-container matColumnDef="weight">
-                <th mat-header-cell *matHeaderCellDef> Weight </th>
-                <td mat-cell *matCellDef="let element"> {{element.weight}} </td>
-            </ng-container>
-        
-            <!-- Symbol Column -->
-            <ng-container matColumnDef="symbol">
-                <th mat-header-cell *matHeaderCellDef> Symbol </th>
-                <td mat-cell *matCellDef="let element"> {{element.symbol}} </td>
-            </ng-container>
-        
-            <tr mat-header-row *matHeaderRowDef="displayedReceiptColumns"></tr>
-            <tr mat-row *matRowDef="let row; columns: displayedReceiptColumns;"></tr>
+            <tr mat-header-row *matHeaderRowDef="displayedUserColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedUserColumns;"></tr>
             </table>
         
-            <mat-paginator #paginator3 [pageSizeOptions]="[5, 10, 20]"
+            <mat-paginator  #paginator [pageSizeOptions]="[5, 10, 20]"
                         showFirstLastButtons
                         aria-label="Select page of periodic elements">
             </mat-paginator>
         </div>
+
+
+   
     </mat-tab>
 </mat-tab-group>
   
