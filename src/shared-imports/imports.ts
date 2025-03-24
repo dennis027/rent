@@ -15,6 +15,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatCardModule } from '@angular/material/card';
 import { CommonModule } from '@angular/common';
+import { MatTableModule } from '@angular/material/table';
 
 export const MaterialModule = [
   MatButtonModule,
@@ -33,5 +34,6 @@ export const MaterialModule = [
   MatProgressSpinnerModule,
   MatSlideToggleModule,
   MatCardModule,
-  CommonModule
+  CommonModule,
+  MatTableModule
 ];
