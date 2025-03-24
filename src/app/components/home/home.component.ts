@@ -16,5 +16,15 @@ export class HomeComponent {
     ngOnInit(){
       console.log(localStorage.getItem('access_token'));
       console.log(localStorage.getItem('refresh_token'));
+
+
     }
+
+
+      logout() {
+    localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
+    console.log(localStorage.getItem('access_token'));
+    console.log(localStorage.getItem('refresh_token'));
+  }
 } 
