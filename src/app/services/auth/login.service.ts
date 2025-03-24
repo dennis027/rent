@@ -26,12 +26,14 @@ export class LoginService {
     return this.http.post(loginAPI, data); // Ensure this.apiUrl is correct
   }
 
-
   getAccessToken(): string | null {
-    return localStorage.getItem('access_token');
+    if (typeof window !== 'undefined') {  // ✅ Ensure it's running in the browser
+      return localStorage.getItem('access_token');
+    }
+    return null;
   }
 
-  logout() {
+  logout() {  
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
   }
