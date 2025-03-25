@@ -10,80 +10,81 @@
 
         <br><br>
         <div class="mat-elevation-z8">
+            <button  (click)="openAddReceiptDial()" class="styleAdd"mat-flat-button><span class="add-col" >+ Add </span></button>
             <table mat-table [dataSource]="dataReceiptSource">
         
        
             <ng-container matColumnDef="receipt_number">
-                <th mat-header-cell *matHeaderCellDef> Receipt Number. </th>
+                <th mat-header-cell class="custom-header-row" *matHeaderCellDef> Receipt Number. </th>
                 <td mat-cell *matCellDef="let element"> {{element.receipt_number}} </td>
             </ng-container>
         
      
             <ng-container matColumnDef="total_amount">
-                <th mat-header-cell *matHeaderCellDef> Total Amount </th>
+                <th mat-header-cell class="custom-header-row" *matHeaderCellDef> Total Amount </th>
                 <td mat-cell *matCellDef="let element"> {{element.total_amount}} </td>
             </ng-container>
         
        
             <ng-container matColumnDef="monthly_rent">
-                <th mat-header-cell *matHeaderCellDef> Monthly Rent </th>
+                <th mat-header-cell class="custom-header-row" *matHeaderCellDef> Monthly Rent </th>
                 <td mat-cell *matCellDef="let element"> {{element.monthly_rent}} </td>
             </ng-container>
         
         
             <ng-container matColumnDef="rental_deposit">
-                <th mat-header-cell *matHeaderCellDef> Rental Deposit </th>
+                <th mat-header-cell class="custom-header-row" *matHeaderCellDef> Rental Deposit </th>
                 <td mat-cell *matCellDef="let element"> {{element.rental_deposit}} </td>
             </ng-container>
 
             <ng-container matColumnDef="electricity_deposit">
-                <th mat-header-cell *matHeaderCellDef> Electiricty Deposit. </th>
+                <th mat-header-cell class="custom-header-row" *matHeaderCellDef> Electiricty Deposit. </th>
                 <td mat-cell *matCellDef="let element"> {{element.electricity_deposit}} </td>
             </ng-container>
         
      
             <ng-container matColumnDef="electricity_bill">
-                <th mat-header-cell *matHeaderCellDef> Electricity Bill </th>
+                <th mat-header-cell class="custom-header-row" *matHeaderCellDef> Electricity Bill </th>
                 <td mat-cell *matCellDef="let element"> {{element.electricity_bill}} </td>
             </ng-container>
         
        
             <ng-container matColumnDef="water_deposit">
-                <th mat-header-cell *matHeaderCellDef> Water Deposit </th>
+                <th mat-header-cell class="custom-header-row" *matHeaderCellDef> Water Deposit </th>
                 <td mat-cell *matCellDef="let element"> {{element.water_deposit}} </td>
             </ng-container>
         
         
             <ng-container matColumnDef="water_bill">
-                <th mat-header-cell *matHeaderCellDef> Water Bill </th>
+                <th mat-header-cell class="custom-header-row" *matHeaderCellDef> Water Bill </th>
                 <td mat-cell *matCellDef="let element"> {{element.water_bill}} </td>
             </ng-container>
 
             <ng-container matColumnDef="service_charge">
-                <th mat-header-cell *matHeaderCellDef> Service Charge. </th>
+                <th mat-header-cell class="custom-header-row" *matHeaderCellDef> Service Charge. </th>
                 <td mat-cell *matCellDef="let element"> {{element.service_charge}} </td>
             </ng-container>
         
      
             <ng-container matColumnDef="security_charge">
-                <th mat-header-cell *matHeaderCellDef> Security Charge </th>
+                <th mat-header-cell class="custom-header-row" *matHeaderCellDef> Security Charge </th>
                 <td mat-cell *matCellDef="let element"> {{element.security_charge}} </td>
             </ng-container>
         
        
             <ng-container matColumnDef="previous_balance">
-                <th mat-header-cell *matHeaderCellDef> Previous Balance </th>
+                <th mat-header-cell class="custom-header-row" *matHeaderCellDef> Previous Balance </th>
                 <td mat-cell *matCellDef="let element"> {{element.previous_balance}} </td>
             </ng-container>
         
         
             <ng-container matColumnDef="date_issued">
-                <th mat-header-cell *matHeaderCellDef> Date Issued </th>
+                <th mat-header-cell class="custom-header-row" *matHeaderCellDef> Date Issued </th>
                 <td mat-cell *matCellDef="let element"> {{element.date_issued}} </td>
             </ng-container>
 
             <ng-container matColumnDef="other_charges">
-                <th mat-header-cell *matHeaderCellDef> Other Charges. </th>
+                <th mat-header-cell class="custom-header-row" *matHeaderCellDef> Other Charges. </th>
                 <td mat-cell *matCellDef="let element"> {{element.other_charges}} </td>
             </ng-container>
         
@@ -105,29 +106,30 @@
         <br><br>
 
         <div class="mat-elevation-z8">
+            <button (click)="openAddHousestDial()" class="styleAdd"mat-flat-button><span class="add-col">+ Add </span></button>
             <table mat-table [dataSource]="dataHousesSource">
         
        
             <ng-container matColumnDef="id">
-                <th mat-header-cell *matHeaderCellDef> ID. </th>
+                <th mat-header-cell class="custom-header-row" *matHeaderCellDef> ID. </th>
                 <td mat-cell *matCellDef="let element"> {{element.id}} </td>
             </ng-container>
         
      
             <ng-container matColumnDef="house_number">
-                <th mat-header-cell *matHeaderCellDef> House Number </th>
+                <th mat-header-cell class="custom-header-row" *matHeaderCellDef> House Number </th>
                 <td mat-cell *matCellDef="let element"> {{element.house_number}} </td>
             </ng-container>
         
        
             <ng-container matColumnDef="due_date">
-                <th mat-header-cell *matHeaderCellDef> Due Date </th>
+                <th mat-header-cell class="custom-header-row" *matHeaderCellDef> Due Date </th>
                 <td mat-cell *matCellDef="let element"> {{element.due_date}} </td>
             </ng-container>
         
         
             <ng-container matColumnDef="rent_amount">
-                <th mat-header-cell *matHeaderCellDef> Rent Amount </th>
+                <th mat-header-cell class="custom-header-row" *matHeaderCellDef> Rent Amount </th>
                 <td mat-cell *matCellDef="let element"> {{element.rent_amount}} </td>
             </ng-container>
         
@@ -147,25 +149,26 @@
         <br><br>
 
         <div class="mat-elevation-z8">
+            <button (click)="openAddUserstDial()" class="styleAdd"mat-flat-button><span class="add-col">+ Add </span></button>
             <table mat-table [dataSource]="dataUsersSource">  
 
             <ng-container matColumnDef="id">
-                <th mat-header-cell *matHeaderCellDef> ID. </th>
+                <th mat-header-cell class="custom-header-row" *matHeaderCellDef> ID. </th>
                 <td mat-cell *matCellDef="let element"> {{element.id}} </td>
             </ng-container>
 
             <ng-container matColumnDef="username">
-                <th mat-header-cell *matHeaderCellDef> User Name </th>
+                <th mat-header-cell class="custom-header-row" *matHeaderCellDef> User Name </th>
                 <td mat-cell *matCellDef="let element"> {{element.username}} </td>
             </ng-container>
 
             <ng-container matColumnDef="national_id">
-                <th mat-header-cell *matHeaderCellDef> National ID </th>
+                <th mat-header-cell class="custom-header-row" *matHeaderCellDef> National ID </th>
                 <td mat-cell *matCellDef="let element"> {{element.national_id}} </td>
             </ng-container>
 
             <ng-container matColumnDef="phone_number">
-                <th mat-header-cell *matHeaderCellDef> Phone Number </th>
+                <th mat-header-cell class="custom-header-row" *matHeaderCellDef> Phone Number </th>
                 <td mat-cell *matCellDef="let element"> {{element.phone_number}} </td>
             </ng-container>
         
@@ -188,7 +191,171 @@
 
   
 
+<ng-template #addReceiptDialog>
+    <h2 matDialogTitle>Hello Receipt!</h2>
+    <mat-dialog-actions align="end">
+        <button mat-button matDialogClose="no">No</button>
+        <button mat-button matDialogClose="yes">Yes</button>
+    </mat-dialog-actions>
+</ng-template>
 
+
+<ng-template #addHouseDialog>
+    <h2 matDialogTitle>Hello Houses!</h2>
+    <mat-dialog-actions align="end">
+        <button mat-button matDialogClose="no">No</button>
+        <button mat-button matDialogClose="yes">Yes</button>
+    </mat-dialog-actions>
+</ng-template>
+
+<ng-template #addUsersDialog>
+    <h2 matDialogTitle>Hello Users!</h2>
+    <mat-dialog-actions align="end">
+        <button mat-button matDialogClose="no">No</button>
+        <button mat-button matDialogClose="yes">Yes</button>
+    </mat-dialog-actions>
+</ng-template>
+
+
+<form [formGroup]="userForm" (ngSubmit)="submitUserForm()">
+    <mat-form-field appearance="outline">
+      <mat-label>Username</mat-label>
+      <input matInput type="text" formControlName="username" />
+      <mat-hint *ngIf="userForm.controls['username'].invalid && userForm.controls['username'].touched" class="error">
+        Username must be at least 3 characters long.
+      </mat-hint>
+    </mat-form-field>
+  
+    <mat-form-field appearance="outline">
+      <mat-label>National ID</mat-label>
+      <input matInput type="text" formControlName="national_id" />
+      <mat-hint *ngIf="userForm.controls['national_id'].invalid && userForm.controls['national_id'].touched" class="error">
+        National ID must be exactly 8 digits.
+      </mat-hint>
+    </mat-form-field>
+  
+    <mat-form-field appearance="outline">
+      <mat-label>Phone Number</mat-label>
+      <input matInput type="text" formControlName="phone_number" />
+      <mat-hint *ngIf="userForm.controls['phone_number'].invalid && userForm.controls['phone_number'].touched" class="error">
+        Phone number must start with "07" and have 10 digits.
+      </mat-hint>
+    </mat-form-field>
+  
+    <button mat-raised-button color="primary" type="submit" [disabled]="userForm.invalid">Submit</button>
+  </form>
+  
 
 
   <br><br>
+
+  <form [formGroup]="rentForm" (ngSubmit)="submitRentForm()">
+    <mat-form-field appearance="outline">
+      <mat-label>House Number</mat-label>
+      <input matInput type="text" formControlName="house_number" />
+      <mat-hint *ngIf="rentForm.controls['house_number'].invalid && rentForm.controls['house_number'].touched" class="error">
+        House number is required (Alphanumeric).
+      </mat-hint>
+    </mat-form-field>
+  
+    <mat-form-field appearance="outline">
+      <mat-label>Due Date</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="due_date" />
+      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+      <mat-hint *ngIf="rentForm.controls['due_date'].invalid && rentForm.controls['due_date'].touched" class="error">
+        Please select a valid future date.
+      </mat-hint>
+    </mat-form-field>
+  
+    <mat-form-field appearance="outline">
+      <mat-label>Rent Amount</mat-label>
+      <input matInput type="number" formControlName="rent_amount" />
+      <mat-hint *ngIf="rentForm.controls['rent_amount'].invalid && rentForm.controls['rent_amount'].touched" class="error">
+        Rent amount must be at least 1000.
+      </mat-hint>
+    </mat-form-field>
+  
+    <mat-form-field appearance="outline">
+      <mat-label>Client ID</mat-label>
+      <input matInput type="number" formControlName="client_id" />
+      <mat-hint *ngIf="rentForm.controls['client_id'].invalid && rentForm.controls['client_id'].touched" class="error">
+        Client ID must be a positive number.
+      </mat-hint>
+    </mat-form-field>
+  
+    <button mat-raised-button color="primary" type="submit" [disabled]="rentForm.invalid">Submit</button>
+  </form>
+  
+
+
+
+
+  <form [formGroup]="rentalForm" (ngSubmit)="submitForm()" class="rental-form">
+    <mat-form-field appearance="outline">
+      <mat-label>Client ID</mat-label>
+      <input matInput type="number" formControlName="client" />
+      <mat-hint>Enter client ID</mat-hint>
+    </mat-form-field>
+  
+    <mat-form-field appearance="outline">
+      <mat-label>House ID</mat-label>
+      <input matInput type="number" formControlName="house" />
+      <mat-hint>Enter house ID</mat-hint>
+    </mat-form-field>
+  
+    <mat-form-field appearance="outline">
+      <mat-label>Monthly Rent</mat-label>
+      <input matInput type="number" formControlName="monthly_rent" />
+      <mat-hint>Enter monthly rent amount</mat-hint>
+    </mat-form-field>
+  
+    <mat-form-field appearance="outline">
+      <mat-label>Rental Deposit</mat-label>
+      <input matInput type="number" formControlName="rental_deposit" />
+      <mat-hint>Deposit required before moving in</mat-hint>
+    </mat-form-field>
+  
+    <mat-form-field appearance="outline">
+      <mat-label>Electricity Deposit</mat-label>
+      <input matInput type="number" formControlName="electricity_deposit" />
+    </mat-form-field>
+  
+    <mat-form-field appearance="outline">
+      <mat-label>Electricity Bill</mat-label>
+      <input matInput type="number" formControlName="electricity_bill" />
+    </mat-form-field>
+  
+    <mat-form-field appearance="outline">
+      <mat-label>Water Deposit</mat-label>
+      <input matInput type="number" formControlName="water_deposit" />
+    </mat-form-field>
+  
+    <mat-form-field appearance="outline">
+      <mat-label>Water Bill</mat-label>
+      <input matInput type="number" formControlName="water_bill" />
+    </mat-form-field>
+  
+    <mat-form-field appearance="outline">
+      <mat-label>Service Charge</mat-label>
+      <input matInput type="number" formControlName="service_charge" />
+    </mat-form-field>
+  
+    <mat-form-field appearance="outline">
+      <mat-label>Security Charge</mat-label>
+      <input matInput type="number" formControlName="security_charge" />
+    </mat-form-field>
+  
+    <mat-form-field appearance="outline">
+      <mat-label>Previous Balance</mat-label>
+      <input matInput type="number" formControlName="previous_balance" />
+    </mat-form-field>
+  
+    <mat-form-field appearance="outline">
+      <mat-label>Other Charges</mat-label>
+      <input matInput type="number" formControlName="other_charges" />
+    </mat-form-field>
+  
+    <button mat-raised-button color="primary" type="submit" [disabled]="rentalForm.invalid">Submit</button>
+  </form>
+  

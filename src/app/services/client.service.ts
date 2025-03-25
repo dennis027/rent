@@ -21,4 +21,9 @@ export class ClientService {
   }
 
 
+  addUser(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}clients/`, data);
+  }
+
+
 }

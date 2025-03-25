@@ -1,10 +1,12 @@
-import {AfterViewInit, Component, ViewChild} from '@angular/core';
+import {AfterViewInit, Component, ViewChild,TemplateRef} from '@angular/core';
 import { MaterialModule } from '../../../shared-imports/imports';
 import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
 import {MatTableDataSource, MatTableModule} from '@angular/material/table';
 import { ClientService } from '../../services/client.service';
 import { HousesService } from '../../services/houses.service';
 import { ReceiptService } from '../../services/receipt.service';
+import { MatDialog } from '@angular/material/dialog';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 export interface usersObjects {
   id: string;
@@ -52,6 +54,16 @@ export interface receiptObject {
 })
 export class HomeComponent {
 
+
+  userForm!: FormGroup;
+  rentForm!: FormGroup;
+  rentalForm!: FormGroup;
+
+  @ViewChild('addReceiptDialog') addReceiptDialog!: TemplateRef<any>;
+  @ViewChild('addHouseDialog') addHouseDialog!: TemplateRef<any>;
+  @ViewChild('addUsersDialog') addUsersDialog!: TemplateRef<any>;
+  
+
   data:any
 
 
@@ -80,8 +92,38 @@ export class HomeComponent {
     this.dataReceiptSource.paginator = this.paginator3;
   }
 
-    constructor(private clientService:ClientService, private housesService:HousesService, private receiptService:ReceiptService){
-      
+    constructor(private clientService:ClientService, private housesService:HousesService, private receiptService:ReceiptService,private dialog: MatDialog,private fb: FormBuilder){
+
+
+        this.userForm = this.fb.group({
+          username: ['', [Validators.required, Validators.minLength(3)]],
+          national_id: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
+          phone_number: ['', [Validators.required, Validators.pattern(/^07\d{8}$/)]]
+        });
+
+
+        this.rentForm = this.fb.group({
+          house_number: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]+$/)]], // Alphanumeric
+          due_date: ['', [Validators.required]], // Future date validation done in submit function
+          rent_amount: [null, [Validators.required, Validators.min(1000)]], // Min rent 1000
+          client_id: [null, [Validators.required, Validators.min(1)]], // Positive integer
+        });
+
+        this.rentalForm = this.fb.group({
+          client: [null, Validators.required],
+          house: [null, Validators.required],
+          monthly_rent: [null, [Validators.required, Validators.min(1)]],
+          rental_deposit: [null, [Validators.required, Validators.min(0)]],
+          electricity_deposit: [null, [Validators.required, Validators.min(0)]],
+          electricity_bill: [null, [Validators.required, Validators.min(0)]],
+          water_deposit: [null, [Validators.required, Validators.min(0)]],
+          water_bill: [null, [Validators.required, Validators.min(0)]],
+          service_charge: [null, [Validators.required, Validators.min(0)]],
+          security_charge: [null, [Validators.required, Validators.min(0)]],
+          previous_balance: [null, [Validators.required, Validators.min(0)]],
+          other_charges: [null, [Validators.required, Validators.min(0)]],
+        });
+
     }
 
     ngOnInit(){
@@ -141,4 +183,86 @@ export class HomeComponent {
     console.log(localStorage.getItem('access_token'));
     console.log(localStorage.getItem('refresh_token'));
   }
+
+
+    openAddReceiptDial() {
+        let dialogRef = this.dialog.open(this.addReceiptDialog);
+        dialogRef.afterClosed().subscribe(result => {
+      
+            if (result !== undefined) {
+                if (result === 'yes') {
+          
+                } else if (result === 'no') {
+                   
+                }
+            }
+        })
+    }
+
+
+  submitForm() {
+    if (this.rentalForm.valid) {
+      console.log('Form Data:', this.rentalForm.value);
+    } else {
+      console.log('Form is invalid!');
+    }
+  }
+
+
+    openAddHousestDial() {
+      let dialogRef = this.dialog.open(this.addHouseDialog);
+      dialogRef.afterClosed().subscribe(result => {
+    
+          if (result !== undefined) {
+              if (result === 'yes') {
+                 
+              } else if (result === 'no') {
+            
+              }
+          }
+      })
+    }
+
+    submitRentForm() {
+      if (this.rentForm.valid) {
+        const formData = this.rentForm.value;
+        console.log('Form Submitted:', formData);
+  
+        // Ensure due_date is a future date
+        const today = new Date();
+        const selectedDate = new Date(formData.due_date);
+        if (selectedDate <= today) {
+          alert('Due date must be a future date.');
+          return;
+        }
+        
+        console.log('Validated Data:', formData);
+      }
+    }
+  
+
+
+    openAddUserstDial() {
+      let dialogRef = this.dialog.open(this.addUsersDialog);
+      dialogRef.afterClosed().subscribe(result => {
+    
+          if (result !== undefined) {
+              if (result === 'yes') {
+                 
+              } else if (result === 'no') {
+            
+              }
+          }
+      })
+    }
+
+
+    submitUserForm() {
+      if (this.userForm.valid) {
+        console.log("Form Submitted!", this.userForm.value);
+      } else {
+        console.log("Form has errors.");
+      }
+    }
+
 } 

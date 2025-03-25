@@ -16,6 +16,9 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatCardModule } from '@angular/material/card';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 
 export const MaterialModule = [
@@ -36,5 +39,8 @@ export const MaterialModule = [
   MatSlideToggleModule,
   MatCardModule,
   CommonModule,
-  MatTableModule
+  MatTableModule,
+  ReactiveFormsModule,
+  MatDatepickerModule,
+  MatNativeDateModule
 ];

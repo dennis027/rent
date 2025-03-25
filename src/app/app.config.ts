@@ -5,6 +5,8 @@ import { provideClientHydration } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { authInterceptor } from './interceptors/auth.interceptor';
 import { routes } from './app.routes';
+import { importProvidersFrom } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -14,7 +16,8 @@ export const appConfig: ApplicationConfig = {
     provideAnimations(),
     provideHttpClient(
       withFetch(),
-      withInterceptors([authInterceptor]) // Register interceptor
-    ), // ✅ Ensure DI-based interceptors work
+      withInterceptors([authInterceptor]) // ✅ Correct placement of interceptors
+    ),
+    importProvidersFrom(ReactiveFormsModule) // ✅ Correct placement of ReactiveFormsModule
   ]
 };
