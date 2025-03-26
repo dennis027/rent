@@ -19,6 +19,10 @@ import { MatTableModule } from '@angular/material/table';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { DatePipe } from '@angular/common';
+import { MatOption } from '@angular/material/core';
+import { MatSelectModule } from '@angular/material/select';
+
 
 
 export const MaterialModule = [
@@ -42,5 +46,8 @@ export const MaterialModule = [
   MatTableModule,
   ReactiveFormsModule,
   MatDatepickerModule,
-  MatNativeDateModule
+  MatNativeDateModule,
+  DatePipe,
+  MatOption,
+  MatSelectModule
 ];

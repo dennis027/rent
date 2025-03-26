@@ -21,5 +21,9 @@ export class HousesService {
     return this.http.get(`${this.apiUrl}houses/`); 
   }
 
+  addHouses(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}houses/`, data);
+  }
+
 
 }

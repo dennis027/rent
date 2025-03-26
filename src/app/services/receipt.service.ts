@@ -21,5 +21,8 @@ export class ReceiptService {
     return this.http.get(`${this.apiUrl}receipts/`); 
   }
 
+  addReceipts(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}receipts/`, data);
+  }
 
 }

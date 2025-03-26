@@ -7,6 +7,8 @@ import { authInterceptor } from './interceptors/auth.interceptor';
 import { routes } from './app.routes';
 import { importProvidersFrom } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+import { provideToastr } from 'ngx-toastr';
+import { MatSelectModule } from '@angular/material/select';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -14,10 +16,11 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideClientHydration(),
     provideAnimations(),
+    provideToastr(),
     provideHttpClient(
       withFetch(),
       withInterceptors([authInterceptor]) // ✅ Correct placement of interceptors
     ),
-    importProvidersFrom(ReactiveFormsModule) // ✅ Correct placement of ReactiveFormsModule
+    importProvidersFrom(ReactiveFormsModule,MatSelectModule) // ✅ Correct placement of ReactiveFormsModule
   ]
 };

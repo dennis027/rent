@@ -33,3 +33,27 @@ tr.mat-row{
 .mat-elevation-z8 {
     box-shadow: 0px 5px 5px -3px rgba(0, 0, 0, 0.2), 0px 8px 10px 1px rgba(0, 0, 0, 0.14), 0px 3px 14px 2px rgba(0, 0, 0, 0.12);
 }
+
+.dialog-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .closeIcon {
+    cursor: pointer;
+    font-size: 24px;
+  }
+  
+
+  .submit{
+    background-color: #1e9aa7 ; 
+    float: right;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 8px;
+
+}

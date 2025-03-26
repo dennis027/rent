@@ -7,6 +7,7 @@ import { HousesService } from '../../services/houses.service';
 import { ReceiptService } from '../../services/receipt.service';
 import { MatDialog } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
 
 export interface usersObjects {
   id: string;
@@ -56,15 +57,27 @@ export class HomeComponent {
 
 
   userForm!: FormGroup;
-  rentForm!: FormGroup;
-  rentalForm!: FormGroup;
+  houseForm!: FormGroup;
+  receiptForm!: FormGroup;
 
+  loadUserForm:boolean=false
+  loadHousesForm:boolean = false
+  loadReceiptForm:boolean =false
   @ViewChild('addReceiptDialog') addReceiptDialog!: TemplateRef<any>;
   @ViewChild('addHouseDialog') addHouseDialog!: TemplateRef<any>;
   @ViewChild('addUsersDialog') addUsersDialog!: TemplateRef<any>;
   
 
   data:any
+
+
+   // Function to allow only future dates
+   futureDatesOnly = (d: Date | null): boolean => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Normalize time to start of the day
+    return d !== null && d > today; // Disable past and today
+  };
+
 
 
   usersObject: usersObjects[] = [];
@@ -92,38 +105,49 @@ export class HomeComponent {
     this.dataReceiptSource.paginator = this.paginator3;
   }
 
-    constructor(private clientService:ClientService, private housesService:HousesService, private receiptService:ReceiptService,private dialog: MatDialog,private fb: FormBuilder){
+    constructor(private clientService:ClientService, private housesService:HousesService, private receiptService:ReceiptService,private dialog: MatDialog,private fb: FormBuilder,private toastr: ToastrService){
 
+      this.getUserForm();
+      this.getHouseForm();
+      this.getReceiptForm();
+    }
 
-        this.userForm = this.fb.group({
-          username: ['', [Validators.required, Validators.minLength(3)]],
-          national_id: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
-          phone_number: ['', [Validators.required, Validators.pattern(/^07\d{8}$/)]]
-        });
+    getUserForm(){
+      
+      this.userForm = this.fb.group({
+        username: ['', [Validators.required, Validators.minLength(3)]],
+        national_id: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
+        phone_number: ['', [Validators.required, Validators.pattern(/^(07|01)\d{8}$/)]]
+      });
+    }
+    getHouseForm(){
+      this.houseForm = this.fb.group({
+        house_number: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]+$/)]], // Alphanumeric
+        due_date: ['', [Validators.required]], // Future date validation done in submit function
+        rent_amount: [null, [Validators.required, Validators.min(1000)]], // Min rent 1000
+        client_id: [null, [Validators.required ]], // Positive integer
+      });
+    }
+    getReceiptForm(){
 
+      this.receiptForm = this.fb.group({
+        client: [null, Validators.required],
+        house: [null, Validators.required],
+        monthly_rent: [0, [Validators.required, Validators.min(1)]],
+        rental_deposit: [0, [Validators.required, Validators.min(0)]],
+        electricity_deposit: [0, [Validators.required, Validators.min(0)]],
+        electricity_bill: [0, [Validators.required, Validators.min(0)]],
+        water_deposit: [0, [Validators.required, Validators.min(0)]],
+        water_bill: [0, [Validators.required, Validators.min(0)]],
+        service_charge: [0, [Validators.required, Validators.min(0)]],
+        security_charge: [0, [Validators.required, Validators.min(0)]],
+        previous_balance: [0, [Validators.required, Validators.min(0)]],
+        other_charges: [0, [Validators.required, Validators.min(0)]],
+      });
+    }
 
-        this.rentForm = this.fb.group({
-          house_number: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]+$/)]], // Alphanumeric
-          due_date: ['', [Validators.required]], // Future date validation done in submit function
-          rent_amount: [null, [Validators.required, Validators.min(1000)]], // Min rent 1000
-          client_id: [null, [Validators.required, Validators.min(1)]], // Positive integer
-        });
-
-        this.rentalForm = this.fb.group({
-          client: [null, Validators.required],
-          house: [null, Validators.required],
-          monthly_rent: [null, [Validators.required, Validators.min(1)]],
-          rental_deposit: [null, [Validators.required, Validators.min(0)]],
-          electricity_deposit: [null, [Validators.required, Validators.min(0)]],
-          electricity_bill: [null, [Validators.required, Validators.min(0)]],
-          water_deposit: [null, [Validators.required, Validators.min(0)]],
-          water_bill: [null, [Validators.required, Validators.min(0)]],
-          service_charge: [null, [Validators.required, Validators.min(0)]],
-          security_charge: [null, [Validators.required, Validators.min(0)]],
-          previous_balance: [null, [Validators.required, Validators.min(0)]],
-          other_charges: [null, [Validators.required, Validators.min(0)]],
-        });
-
+    formatDate(date: Date): string {
+      return date.toISOString().split('T')[0]; // Extracts YYYY-MM-DD
     }
 
     ngOnInit(){
@@ -180,12 +204,11 @@ export class HomeComponent {
       logout() {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
-    console.log(localStorage.getItem('access_token'));
-    console.log(localStorage.getItem('refresh_token'));
   }
 
 
     openAddReceiptDial() {
+      this.getReceiptForm();
         let dialogRef = this.dialog.open(this.addReceiptDialog);
         dialogRef.afterClosed().subscribe(result => {
       
@@ -200,9 +223,22 @@ export class HomeComponent {
     }
 
 
-  submitForm() {
-    if (this.rentalForm.valid) {
-      console.log('Form Data:', this.rentalForm.value);
+  submitReceiptForm() {
+    this.loadReceiptForm = true
+    if (this.receiptForm.valid) {
+      console.log('Form Data:', this.receiptForm.value);
+      this.receiptService.addReceipts(this.receiptForm.value).subscribe(
+        (response) => {
+          console.log("Receipt added successfully.", response);
+          this.getReceiptData();
+          this.loadReceiptForm = false
+          this.receiptForm.reset();
+        },
+        (error) => {
+          console.error("Error adding user.", error);
+          this.loadReceiptForm = false
+        }
+      )
     } else {
       console.log('Form is invalid!');
     }
@@ -210,6 +246,7 @@ export class HomeComponent {
 
 
     openAddHousestDial() {
+      this.getHouseForm();
       let dialogRef = this.dialog.open(this.addHouseDialog);
       dialogRef.afterClosed().subscribe(result => {
     
@@ -223,9 +260,10 @@ export class HomeComponent {
       })
     }
 
-    submitRentForm() {
-      if (this.rentForm.valid) {
-        const formData = this.rentForm.value;
+    submitHouseForm() {
+      this.loadHousesForm = true
+      if (this.houseForm.valid) {
+        const formData = this.houseForm.value;
         console.log('Form Submitted:', formData);
   
         // Ensure due_date is a future date
@@ -235,7 +273,30 @@ export class HomeComponent {
           alert('Due date must be a future date.');
           return;
         }
+
+        const data = {
+          house_number: formData.house_number,
+          due_date: this.formatDate(selectedDate),
+          rent_amount: formData.rent_amount,
+          client_id: formData.client_id
+        }
         
+        this.housesService.addHouses(data).subscribe(
+          (response) => {
+            console.log("House added successfully.", response);
+            this.toastr.success('House saved successfully!', 'Success');
+            this.getHousesData();
+            this.loadHousesForm = false
+            this.houseForm.reset();
+          },
+          (error) => {
+            console.error("Error adding user.", error);
+            this.toastr.error('Something went wrong!', 'Error');
+            this.loadHousesForm = false
+          }
+        )
+
+
         console.log('Validated Data:', formData);
       }
     }
@@ -243,6 +304,7 @@ export class HomeComponent {
 
 
     openAddUserstDial() {
+      this.getUserForm();
       let dialogRef = this.dialog.open(this.addUsersDialog);
       dialogRef.afterClosed().subscribe(result => {
     
@@ -258,8 +320,23 @@ export class HomeComponent {
 
 
     submitUserForm() {
+      this.loadUserForm =true
       if (this.userForm.valid) {
         console.log("Form Submitted!", this.userForm.value);
+        this.clientService.addUser(this.userForm.value).subscribe(
+          (response) => {
+            this.toastr.success('User saved successfully!', 'Success');
+            this.dialog.closeAll();
+            this.getUsersData();
+            this.loadUserForm = false
+            this.userForm.reset();
+          },
+          (error) => {
+            console.error("Error adding user.", error);
+            this.toastr.error('Something went wrong!', 'Error');
+            this.loadUserForm = false
+          }
+        )
       } else {
         console.log("Form has errors.");
       }
