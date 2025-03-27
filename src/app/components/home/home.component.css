@@ -57,3 +57,28 @@ tr.mat-row{
     border-radius: 8px;
 
 }
+
+
+
+
+
+.receipt-container {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background: #fff;
+    border: 1px solid #ddd;
+    width: 80%;
+    margin: auto;
+  }
+  
+  table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  

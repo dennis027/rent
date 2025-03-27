@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, ViewChild,TemplateRef} from '@angular/core';
+import {AfterViewInit, Component,ElementRef, ViewChild,TemplateRef} from '@angular/core';
 import { MaterialModule } from '../../../shared-imports/imports';
 import {MatPaginator, MatPaginatorModule} from '@angular/material/paginator';
 import {MatTableDataSource, MatTableModule} from '@angular/material/table';
@@ -8,7 +8,8 @@ import { ReceiptService } from '../../services/receipt.service';
 import { MatDialog } from '@angular/material/dialog';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
-
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
 export interface usersObjects {
   id: string;
   username: number;
@@ -24,6 +25,7 @@ export interface housesObject {
   house_number: number;
   due_date: number;
   rent_amount: string;
+  last_reading:string;
 }
 
 
@@ -66,6 +68,35 @@ export class HomeComponent {
   @ViewChild('addReceiptDialog') addReceiptDialog!: TemplateRef<any>;
   @ViewChild('addHouseDialog') addHouseDialog!: TemplateRef<any>;
   @ViewChild('addUsersDialog') addUsersDialog!: TemplateRef<any>;
+  @ViewChild('receiptPreviewDialog') receiptPreviewDialog!: TemplateRef<any>;
+
+  @ViewChild('receiptPreview', { static: false }) receiptPreview!: ElementRef;
+
+
+  receipt: any = null;
+
+  receiptItems: any[] = [];
+
+  formattedDate: string = '';
+
+  receiptClientName:any
+
+  houseNameNo:any
+
+
+
+  generatePDF() {
+    const element = this.receiptPreview.nativeElement;
+    html2canvas(element, { scale: 2 }).then(canvas => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgWidth = 190;
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+      pdf.addImage(imgData, 'PNG', 10, 10, imgWidth, imgHeight);
+      pdf.save(`receipt_${this.receipt.receipt_number}.pdf`);
+    });
+  }
   
 
   data:any
@@ -86,18 +117,20 @@ export class HomeComponent {
 
 
   housesObject: housesObject[] = []; 
-  displayedHosesColumns: string[] = ['id', 'house_number', 'due_date', 'rent_amount'];
+  displayedHosesColumns: string[] = ['id', 'house_number','last_reading', 'due_date', 'rent_amount'];
   dataHousesSource = new MatTableDataSource<housesObject>(this.housesObject);
 
 
   receiptObject: receiptObject[] = [];
-  displayedReceiptColumns: string[] = ['receipt_number', 'total_amount', 'date_issued', 'monthly_rent','rental_deposit', 'electricity_deposit','electricity_bill',  'water_deposit','water_bill', 'service_charge', 'security_charge', 'previous_balance','other_charges'];
+  displayedReceiptColumns: string[] = ['receipt_number', 'total_amount', 'date_issued', 'monthly_rent','rental_deposit', 'electricity_deposit','electricity_bill',  'water_deposit','water_bill', 'service_charge', 'security_charge', 'previous_balance','other_charges','actions'];
   dataReceiptSource = new MatTableDataSource<receiptObject>(this.receiptObject);
 
 
   @ViewChild('paginator') paginator!: MatPaginator;
   @ViewChild('paginator2') paginator2!: MatPaginator;
   @ViewChild('paginator3') paginator3!: MatPaginator;
+
+  receiptData:any
 
   ngAfterViewInit() {
     this.dataUsersSource.paginator = this.paginator;
@@ -124,16 +157,15 @@ export class HomeComponent {
       this.houseForm = this.fb.group({
         house_number: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]+$/)]], // Alphanumeric
         due_date: ['', [Validators.required]], // Future date validation done in submit function
-        rent_amount: [null, [Validators.required, Validators.min(1000)]], // Min rent 1000
-        client_id: [null, [Validators.required ]], // Positive integer
+        rent_amount: [0, [Validators.required, Validators.min(1000)]], // Min rent 1000
+        last_reading: [0, [Validators.required, Validators.min(0)]], // Min last reading 0
       });
     }
     getReceiptForm(){
-
       this.receiptForm = this.fb.group({
-        client: [null, Validators.required],
-        house: [null, Validators.required],
-        monthly_rent: [0, [Validators.required, Validators.min(1)]],
+        client: [null, Validators.required],  // Dropdown should be null
+        house: [null, Validators.required],   // Dropdown should be null
+        monthly_rent: [0, [Validators.required, Validators.min(1)]], 
         rental_deposit: [0, [Validators.required, Validators.min(0)]],
         electricity_deposit: [0, [Validators.required, Validators.min(0)]],
         electricity_bill: [0, [Validators.required, Validators.min(0)]],
@@ -143,6 +175,8 @@ export class HomeComponent {
         security_charge: [0, [Validators.required, Validators.min(0)]],
         previous_balance: [0, [Validators.required, Validators.min(0)]],
         other_charges: [0, [Validators.required, Validators.min(0)]],
+        previous_water_reading: [null, Validators.required],
+        current_water_reading: [null, Validators.required],
       });
     }
 
@@ -223,26 +257,45 @@ export class HomeComponent {
     }
 
 
-  submitReceiptForm() {
-    this.loadReceiptForm = true
-    if (this.receiptForm.valid) {
-      console.log('Form Data:', this.receiptForm.value);
-      this.receiptService.addReceipts(this.receiptForm.value).subscribe(
-        (response) => {
-          console.log("Receipt added successfully.", response);
-          this.getReceiptData();
-          this.loadReceiptForm = false
-          this.receiptForm.reset();
-        },
-        (error) => {
-          console.error("Error adding user.", error);
-          this.loadReceiptForm = false
-        }
-      )
-    } else {
-      console.log('Form is invalid!');
+    submitReceiptForm() {
+      this.loadReceiptForm = true;
+      if (this.receiptForm.valid) {
+        console.log('Form Data:', this.receiptForm.value);
+        this.receiptService.addReceipts(this.receiptForm.value).subscribe(
+          (response) => {
+            console.log("Receipt added successfully.", response);
+            this.getReceiptData();
+            this.loadReceiptForm = false;
+            this.receiptForm.reset();  // Keep this instead of re-initializing the form
+            this.dialog.closeAll();
+            this.toastr.success('Receipt saved successfully!', 'Success');
+          },
+          (error) => {
+            console.error("Error adding user.", error);
+            this.loadReceiptForm = false;
+          }
+        );
+      } else {
+        console.log(this.receiptForm.value);
+        console.log('Form is invalid!');
+      }
     }
-  }
+
+
+    calculateWaterBill() {
+      const prevReading = Number(this.receiptForm.get('previous_water_reading')?.value) || 0;
+      const currentReading = Number(this.receiptForm.get('current_water_reading')?.value) || 0;
+    
+      const totalUnits = Math.max(currentReading - prevReading, 0); // Prevent negative values
+      let waterBill = (100 * totalUnits);
+      waterBill +=100
+    
+      console.log(`Previous: ${prevReading}, Current: ${currentReading}, Units: ${totalUnits}, Bill: ${waterBill}`);
+    
+      this.receiptForm.patchValue({ water_bill: waterBill });
+    }
+    
+
 
 
     openAddHousestDial() {
@@ -258,6 +311,46 @@ export class HomeComponent {
               }
           }
       })
+    }
+
+
+    checkHouseNumber(){
+      const inputHouseNumber = this.houseForm.value.house_number?.trim(); // Ensure it's a string
+      const matchedHouse = this.dataHousesSource.data.find(
+        (house: any) => String(house.house_number) === String(inputHouseNumber)
+      );
+
+      if (matchedHouse) {
+        this.houseForm.get('house_number')?.setValue('');
+        this.toastr.info("House number already exists!"," Try add House number")
+      } else {
+      }
+    }
+
+    checkUserIdNumber(){
+      const inputIDNumber = this.userForm.value.national_id?.trim(); // Ensure it's a string
+      const matchedHouse = this.dataUsersSource.data.find(
+        (user: any) => String(user.national_id) === String(inputIDNumber)
+      );
+
+      if (matchedHouse) {
+        this.userForm.get('national_id')?.setValue('');
+        this.toastr.info("National ID already exists!"," User Exists")
+      } else {
+      }
+    }
+
+    checkUserPhoneNumber(){
+      const inputIDNumber = this.userForm.value.phone_number?.trim(); // Ensure it's a string
+      const matchedHouse = this.dataUsersSource.data.find(
+        (user: any) => String(user.phone_number) === String(inputIDNumber)
+      );
+
+      if (matchedHouse) {
+        this.userForm.get('phone_number')?.setValue('');
+        this.toastr.info("Phone Number already exists!"," User Exists")
+      } else {
+      }
     }
 
     submitHouseForm() {
@@ -287,6 +380,7 @@ export class HomeComponent {
             this.toastr.success('House saved successfully!', 'Success');
             this.getHousesData();
             this.loadHousesForm = false
+            this.dialog.closeAll()
             this.houseForm.reset();
           },
           (error) => {
@@ -342,4 +436,63 @@ export class HomeComponent {
       }
     }
 
+
+
+
+    generateReceipt(id:any){
+      this.receiptData = id
+      this.receipt = this.receiptData;
+      console.log ( this.receipt.client )
+
+
+      this.receiptClientName = this.dataUsersSource.data.find((u: any) => u.id === this.receipt.client)?.username || "User not found";
+      this.houseNameNo = this.dataHousesSource.data.find((u: any) => u.id === this.receipt.house)?.house_number || "House not found";
+
+  
+      
+
+            // Format the receipt items dynamically
+      this.receiptItems = [
+        { label: 'Monthly Rent', amount: parseFloat(this.receipt.monthly_rent) },
+        { label: 'Rental Deposit', amount: parseFloat(this.receipt.rental_deposit) },
+        { label: 'Electricity Deposit', amount: parseFloat(this.receipt.electricity_deposit) },
+        { label: 'Electricity Bill', amount: parseFloat(this.receipt.electricity_bill) },
+        { label: 'Water Deposit', amount: parseFloat(this.receipt.water_deposit) },
+        { label: 'Water Bill', amount: parseFloat(this.receipt.water_bill) },
+        { label: 'Service Charge', amount: parseFloat(this.receipt.service_charge) },
+        { label: 'Security Charge', amount: parseFloat(this.receipt.security_charge) },
+        { label: 'Previous Balance', amount: parseFloat(this.receipt.previous_balance) },
+        { label: 'Other Charges', amount: parseFloat(this.receipt.other_charges) }
+      ];
+
+      this.formattedDate = new Date(this.receipt.date_issued).toLocaleDateString();
+    }
+
+
+
+    openReceiptReview() {
+      let dialogRef = this.dialog.open(this.receiptPreviewDialog,{
+        width: '800px',
+        height: 'auto',
+        panelClass: 'receipt-preview-dialog'
+      });
+      dialogRef.afterClosed().subscribe(result => {
+          if (result !== undefined) {
+              if (result === 'yes') {
+             
+              } else if (result === 'no') {
+          
+              }
+          }
+      })
+  }
+
+
+  getHouseDetails(id: any) {
+
+    const houseObject = this.dataHousesSource.data.find(house => house.id === id);
+    console.log(houseObject)
+    this.receiptForm.patchValue({ monthly_rent: houseObject?.rent_amount });
+    this.receiptForm.patchValue({ previous_water_reading: houseObject?.last_reading });
+  }
 } 

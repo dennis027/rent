@@ -5,9 +5,9 @@
 <br><br>
     
 
-<mat-tab-group>
+<div class="container">
+  <mat-tab-group>
     <mat-tab label="Receipts"> 
-
         <br><br>
         <div class="mat-elevation-z8">
             <button  (click)="openAddReceiptDial()" class="styleAdd"mat-flat-button><span class="add-col" >+ Add </span></button>
@@ -87,6 +87,17 @@
                 <th mat-header-cell class="custom-header-row" *matHeaderCellDef> Other Charges. </th>
                 <td mat-cell *matCellDef="let element"> {{element.other_charges}} </td>
             </ng-container>
+
+            <ng-container matColumnDef="actions" >
+              <th class="custom-header-row" mat-header-cell *matHeaderCellDef id="trr" > Actions </th>
+              <td mat-cell *matCellDef="let element" align="center">
+             
+                <button mat-icon-button matTooltip="Generate Receipt" (click)="generateReceipt(element);openReceiptReview()">
+                  <mat-icon>receipt</mat-icon>
+                </button>   &nbsp;
+            
+              </td>
+            </ng-container>
         
  
         
@@ -125,6 +136,12 @@
             <ng-container matColumnDef="due_date">
                 <th mat-header-cell class="custom-header-row" *matHeaderCellDef> Due Date </th>
                 <td mat-cell *matCellDef="let element"> {{element.due_date}} </td>
+            </ng-container>
+
+            
+            <ng-container matColumnDef="last_reading">
+                <th mat-header-cell class="custom-header-row" *matHeaderCellDef> Last Reading </th>
+                <td mat-cell *matCellDef="let element"> {{element.last_reading}} </td>
             </ng-container>
         
         
@@ -186,21 +203,149 @@
    
     </mat-tab>
 </mat-tab-group>
+</div>
+
+
+
   
 
 
   
 
 <ng-template #addReceiptDialog>
-  <div class="dialog-header">
-    <h2 matDialogTitle>Receipting</h2> 
-    <mat-icon matDialogClose class="closeIcon">close</mat-icon> 
-  </div>
+    <div class="dialog-header">
+      <h2 matDialogTitle>Receipting</h2> 
+      <mat-icon matDialogClose class="closeIcon">close</mat-icon> 
+    </div>
 
-  <mat-dialog-actions align="end">
-      <button mat-button matDialogClose="no">No</button>
-      <button mat-button matDialogClose="yes">Yes</button>
-  </mat-dialog-actions>
+    <form [formGroup]="receiptForm" (ngSubmit)="submitReceiptForm()" class="rental-form">
+
+      <div class="container-fluid">
+        <div class="row">
+  
+          <div class="col-md-4">
+            <mat-form-field appearance="outline">
+              <mat-label>Client</mat-label>
+              <mat-select formControlName="client">
+                <mat-option *ngFor="let user of dataUsersSource.data" [value]="user.id">
+                  {{ user.username }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+
+
+          </div>
+          <div class="col-md-4">
+
+            <mat-form-field appearance="outline">
+              <mat-label>House</mat-label>
+              <mat-select formControlName="house">
+                <mat-option *ngFor="let user of dataHousesSource.data" [value]="user.id" (click)="getHouseDetails(user.id)">
+                  {{ user.house_number }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="col-md-4">
+            <mat-form-field appearance="outline">
+              <mat-label>Monthly Rent</mat-label>
+              <input matInput type="number" formControlName="monthly_rent"  />
+              <mat-hint>Enter monthly rent amount</mat-hint>
+            </mat-form-field>
+         
+          </div>
+
+
+        </div>
+        <div class="row">
+          <div class="col-md-4">
+            <mat-form-field appearance="outline">
+              <mat-label>Other Charges</mat-label>
+              <input matInput type="number" formControlName="other_charges" />
+            </mat-form-field>
+          </div>
+          <div class="col-md-4">
+            <mat-form-field appearance="outline">
+              <mat-label>Rental Deposit</mat-label>
+              <input matInput type="number" formControlName="rental_deposit" />
+              <mat-hint>Deposit required before moving in</mat-hint>
+            </mat-form-field>
+          </div>
+          <div class="col-md-4">
+            <mat-form-field appearance="outline">
+              <mat-label>Electricity Deposit</mat-label>
+              <input matInput type="number" formControlName="electricity_deposit" />
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4">
+            <mat-form-field appearance="outline">
+              <mat-label>Electricity Bill</mat-label>
+              <input matInput type="number" formControlName="electricity_bill" />
+            </mat-form-field>
+          </div>  
+          <div class="col-md-4">
+            <mat-form-field appearance="outline">
+              <mat-label>Water Deposit</mat-label>
+              <input matInput type="number" formControlName="water_deposit" />
+            </mat-form-field>
+          </div>
+          <div class="col-md-4">
+            <mat-form-field appearance="outline">
+              <mat-label>Water Bill</mat-label>
+              <input matInput type="number" formControlName="water_bill" />
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4">
+            <mat-form-field appearance="outline">
+              <mat-label>Service Charge</mat-label>
+              <input matInput type="number" formControlName="service_charge" />
+            </mat-form-field>
+          </div>
+          <div class="col-md-4">  
+            <mat-form-field appearance="outline">
+              <mat-label>Security Charge</mat-label>
+              <input matInput type="number" formControlName="security_charge" />
+            </mat-form-field>
+          </div>
+          <div class="col-md-4">
+            <mat-form-field appearance="outline">
+              <mat-label>Previous Balance</mat-label>
+              <input matInput type="number" formControlName="previous_balance" />
+            </mat-form-field>
+          </div>
+        </div>
+ 
+        <div class="row">
+          <div class="col-md-4">
+            <mat-form-field appearance="outline">
+              <mat-label>Previous Water Reading</mat-label>
+              <input matInput type="number" formControlName="previous_water_reading" (change)="calculateWaterBill()" />
+            </mat-form-field>
+          </div>
+          <div class="col-md-4">
+            <mat-form-field appearance="outline">
+              <mat-label>Current Water Reading</mat-label>
+              <input matInput type="number" formControlName="current_water_reading" (change)="calculateWaterBill()" />
+            </mat-form-field>
+          </div>
+          <div class="col-md-4">
+            <mat-form-field appearance="outline">
+              <mat-label>Water Bill</mat-label>
+              <input matInput type="number" formControlName="water_bill"  />
+            </mat-form-field>
+          </div>
+        </div>
+        
+      </div>
+
+      <button mat-raised-button color="primary" class="submit" type="submit" [disabled]="receiptForm.invalid || loadReceiptForm">Submit</button>
+    </form>
+
 </ng-template>
 
 
@@ -215,7 +360,7 @@
         <div class="col-md-4">
           <mat-form-field appearance="outline">
             <mat-label>House Number</mat-label>
-            <input matInput type="text" formControlName="house_number" />
+            <input matInput type="text" formControlName="house_number" (change)="checkHouseNumber()" />
             <mat-hint *ngIf="houseForm.controls['house_number'].invalid && houseForm.controls['house_number'].touched" class="error">
               House number is required (Alphanumeric).
             </mat-hint>
@@ -246,32 +391,26 @@
       <div class="row">
         <div class="col-md-4">
           <mat-form-field appearance="outline">
-            <mat-label>Client</mat-label>
-            <mat-select formControlName="client_id">
-              <mat-option *ngFor="let user of dataUsersSource.data" [value]="user.id">
-                {{ user.username }}
-              </mat-option>
-            </mat-select>
-            <mat-hint *ngIf="houseForm.controls['client_id'].invalid && houseForm.controls['client_id'].touched" class="error">
-              Please select a valid client.
+            <mat-label>Water Reading</mat-label>
+            <input matInput type="text" formControlName="last_reading" />
+            <mat-hint *ngIf="houseForm.controls['last_reading'].invalid && houseForm.controls['last_reading'].touched" class="error">
+              Water Reading is required
             </mat-hint>
           </mat-form-field>
-          
+        </div>
+        <div class="col-md-4">
 
-            
         </div>
         <div class="col-md-4">
-          
+       
         </div>
-        <div class="col-md-4">
-          
-        </div>
+
       </div>
     </div>
  
     <button mat-raised-button color="primary" type="submit" class="submit" [disabled]="houseForm.invalid || loadHousesForm">Submit</button>
   </form>
-
+  <br>
 </ng-template>
 
 <ng-template #addUsersDialog>
@@ -295,7 +434,7 @@
         <div class="col-md-4">
           <mat-form-field appearance="outline">
             <mat-label>National ID</mat-label>
-            <input matInput type="text" formControlName="national_id" />
+            <input matInput type="text" formControlName="national_id" (change)="checkUserIdNumber()" />
             <mat-hint *ngIf="userForm.controls['national_id'].invalid && userForm.controls['national_id'].touched" class="error">
               National ID must be exactly 8 digits.
             </mat-hint>
@@ -304,7 +443,7 @@
         <div class="col-md-4">
           <mat-form-field appearance="outline">
             <mat-label>Phone Number</mat-label>
-            <input matInput type="text" formControlName="phone_number" />
+            <input matInput type="text" formControlName="phone_number" (change)="checkUserPhoneNumber()" />
             <mat-hint *ngIf="userForm.controls['phone_number'].invalid && userForm.controls['phone_number'].touched" class="error">
               Phone number must start with "01" or "07" and have 10 digits.
             </mat-hint>
@@ -312,9 +451,9 @@
         </div>
       </div>
     </div>
-    <br><br>
-    <button mat-raised-button color="primary" type="submit" [disabled]="userForm.invalid || loadUserForm" class="submit">Submit</button>
     <br>
+    <button mat-raised-button color="primary" type="submit" [disabled]="userForm.invalid || loadUserForm" class="submit">Submit</button>
+    <br> <br>
   </form>
  
 </ng-template>
@@ -329,111 +468,59 @@
 
   
 
-
-
-
-  <form [formGroup]="receiptForm" (ngSubmit)="submitReceiptForm()" class="rental-form">
-
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-md-4">
-          <mat-form-field appearance="outline">
-            <mat-label>Monthly Rent</mat-label>
-            <input matInput type="number" formControlName="monthly_rent" />
-            <mat-hint>Enter monthly rent amount</mat-hint>
-          </mat-form-field>
-        </div>
-        <div class="col-md-4">
-          <mat-form-field appearance="outline">
-            <mat-label>Rental Deposit</mat-label>
-            <input matInput type="number" formControlName="rental_deposit" />
-            <mat-hint>Deposit required before moving in</mat-hint>
-          </mat-form-field>
-        </div>
-        <div class="col-md-4">
-          <mat-form-field appearance="outline">
-            <mat-label>Electricity Deposit</mat-label>
-            <input matInput type="number" formControlName="electricity_deposit" />
-          </mat-form-field>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-4">
-          <mat-form-field appearance="outline">
-            <mat-label>Electricity Bill</mat-label>
-            <input matInput type="number" formControlName="electricity_bill" />
-          </mat-form-field>
-        </div>  
-        <div class="col-md-4">
-          <mat-form-field appearance="outline">
-            <mat-label>Water Deposit</mat-label>
-            <input matInput type="number" formControlName="water_deposit" />
-          </mat-form-field>
-        </div>
-        <div class="col-md-4">
-          <mat-form-field appearance="outline">
-            <mat-label>Water Bill</mat-label>
-            <input matInput type="number" formControlName="water_bill" />
-          </mat-form-field>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-4">
-          <mat-form-field appearance="outline">
-            <mat-label>Service Charge</mat-label>
-            <input matInput type="number" formControlName="service_charge" />
-          </mat-form-field>
-        </div>
-        <div class="col-md-4">  
-          <mat-form-field appearance="outline">
-            <mat-label>Security Charge</mat-label>
-            <input matInput type="number" formControlName="security_charge" />
-          </mat-form-field>
-        </div>
-        <div class="col-md-4">
-          <mat-form-field appearance="outline">
-            <mat-label>Previous Balance</mat-label>
-            <input matInput type="number" formControlName="previous_balance" />
-          </mat-form-field>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-4">
-            <mat-form-field appearance="outline">
-              <mat-label>Other Charges</mat-label>
-              <input matInput type="number" formControlName="other_charges" />
-            </mat-form-field>
-        </div>
-        <div class="col-md-4">
-          <mat-form-field appearance="outline">
-            <mat-label>Client</mat-label>
-            <mat-select formControlName="client">
-              <mat-option *ngFor="let user of dataUsersSource.data" [value]="user.id">
-                {{ user.username }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-
-
-        </div>
-        <div class="col-md-4">
-
-
-          <mat-form-field appearance="outline">
-            <mat-label>House</mat-label>
-            <mat-select formControlName="house">
-              <mat-option *ngFor="let user of dataHousesSource.data" [value]="user.id">
-                {{ user.house_number }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-
-
-        
-        </div>
-      </div>
+  <ng-template #receiptPreviewDialog>
+    <div class="dialog-header">
+      <h2 matDialogTitle>Receipt Preview</h2> 
+      <mat-icon matDialogClose class="closeIcon">close</mat-icon> 
     </div>
+    <div #receiptPreview class="receipt-container">
+      <h2 style="text-align: center;">New Era Apartments</h2>
+      <div class="container-fluid" style="width: 100%;">
+        <div class="row">
+          <div class="col-6">
+            <p><strong>Receipt No:</strong> {{ receipt?.receipt_number }}</p>
+            <p><strong>Date:</strong> {{ formattedDate }}</p>
+            <p><strong>Received From (Client ):</strong> {{ receiptClientName }}</p>
+            <p><strong>Apartment No:</strong> {{ houseNameNo }}</p>
+          </div>
+          <div class="col-6">
+            <p><strong>Current Water Reading:</strong> {{ receipt?.current_water_reading  }}</p>
+            <p><strong>Previous Water Reading:</strong> {{receipt?.previous_water_reading }}</p>
+            <p><strong>Total Units:</strong> {{ (receipt?.current_water_reading) - receipt?.previous_water_reading }}</p>
+          </div>
+        </div>
+      </div>
+   
+    
+      <table border="1" width="100%">
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th>Kshs</th>
+            <th>Cts</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of receiptItems">
+            <td>{{ item.label }}</td>
+            <td>{{ item.amount | number }}</td>
+            <td>00</td>
+          </tr>
+          <tr>
+            <td><strong>Total</strong></td>
+            <td><strong>{{ receipt.total_amount | number }}</strong></td>
+            <td>00</td>
+          </tr>
+        </tbody>
+      </table>
+    </div> <br>
+    
+    <button mat-button (click)="generatePDF()">Download PDF</button>
 
-    <button mat-raised-button color="primary" type="submit" [disabled]="receiptForm.invalid || loadReceiptForm">Submit</button>
-  </form>
-  
+
+    
+  </ng-template>
+
+
+
+
