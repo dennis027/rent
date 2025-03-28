@@ -855,7 +855,12 @@
     <h2 matDialogTitle>System Parameters </h2> 
     <mat-icon matDialogClose class="closeIcon">close</mat-icon> 
   </div>
-  <p>&nbsp; &nbsp; &nbsp;Variables for the System Settings</p>
+  <div class="container-fluid">
+    <p>Variables for the System Settings</p>
+    <p>Base Charges - Monthly Base Charges for water</p>
+    <p>Water Unit Cost - Cost of unit of water</p>
+  </div>
+  
   <form [formGroup]="systemParamsForm" (ngSubmit)="updateSystemParameters()" class="system-form">
     <div class="container-fluid">
       <div class="row">
