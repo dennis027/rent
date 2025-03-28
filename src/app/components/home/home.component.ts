@@ -10,6 +10,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { SystemParametersService } from '../../services/system-parameters.service';
 export interface usersObjects {
   id: string;
   username: number;
@@ -64,6 +65,7 @@ export class HomeComponent {
   houseUpdateForm!:FormGroup
   receiptForm!: FormGroup;
   receiptUpdateForm!:FormGroup
+  systemParamsForm!:FormGroup
   
 
   loadUserForm:boolean=false
@@ -72,6 +74,7 @@ export class HomeComponent {
   loadHousesUpdateForm:boolean=false
   loadReceiptForm:boolean =false
   loadReceiptUpdateForm:boolean=false
+  loadSystemParamsForm:boolean = false
   @ViewChild('addReceiptDialog') addReceiptDialog!: TemplateRef<any>;
   @ViewChild('addHouseDialog') addHouseDialog!: TemplateRef<any>;
   @ViewChild('addUsersDialog') addUsersDialog!: TemplateRef<any>;
@@ -82,6 +85,7 @@ export class HomeComponent {
   @ViewChild('deleteUserDial') deleteUserDial!: TemplateRef<any>;
   @ViewChild('deleteHouseDial') deleteHouseDial!: TemplateRef<any>;
   @ViewChild('deleteReceiptDial') deleteReceiptDial!: TemplateRef<any>;
+  @ViewChild('openSystParameterDial') openSystParameterDial!: TemplateRef<any>;
 
 
 
@@ -101,6 +105,8 @@ export class HomeComponent {
   currentID:any
   currentHouseID:any
   currentReceiptId:any
+
+  systemParams:any
 
 
 
@@ -157,7 +163,7 @@ export class HomeComponent {
     this.dataReceiptSource.paginator = this.paginator3;
   }
 
-    constructor(private clientService:ClientService, private housesService:HousesService, private receiptService:ReceiptService,private dialog: MatDialog,private fb: FormBuilder,private toastr: ToastrService){
+    constructor(private clientService:ClientService, private housesService:HousesService, private receiptService:ReceiptService,private dialog: MatDialog,private fb: FormBuilder,private toastr: ToastrService,private systemParamsService:SystemParametersService){
 
       this.getUserForm();
       this.getHouseForm();
@@ -165,6 +171,14 @@ export class HomeComponent {
       this.getUserUpdateForm();
       this.getHouseUpdateForm();
       this.getReceiptUpdateForm();
+      this.getSystemParamsForm()
+    }
+
+    getSystemParamsForm(){
+      this.systemParamsForm = this.fb.group({
+        unit_cost:[0, [Validators.required, Validators.min(0)]],
+        base_value:[0, [Validators.required, Validators.min(0)]],
+      })
     }
 
     getUserForm(){
@@ -249,9 +263,21 @@ export class HomeComponent {
       this.getUsersData();
       this.getHousesData();
       this.getReceiptData();
+      this.getSystemParams();
 
     }
 
+    getSystemParams(){
+        this.systemParamsService.getData().subscribe({
+          next: (response) => {
+            console.log('System parameters:', response);
+            this.systemParams = response;
+          },
+          error: (error) => {
+            console.error('Error fetching system parameters:', error);
+          }
+        })
+    }
     getUsersData(){
       this.clientService.getData().subscribe({
         next: (response) => {
@@ -345,8 +371,8 @@ export class HomeComponent {
       const currentReading = Number(this.receiptForm.get('current_water_reading')?.value) || 0;
     
       const totalUnits = Math.max(currentReading - prevReading, 0); // Prevent negative values
-      let waterBill = (100 * totalUnits);
-      waterBill +=100
+      let waterBill = (this.systemParams?.unit_cost * totalUnits);
+      waterBill +=this.systemParams?.base_value
     
       console.log(`Previous: ${prevReading}, Current: ${currentReading}, Units: ${totalUnits}, Bill: ${waterBill}`);
     
@@ -359,8 +385,8 @@ export class HomeComponent {
       const currentReading = Number(this.receiptUpdateForm.get('current_water_reading')?.value) || 0;
     
       const totalUnits = Math.max(currentReading - prevReading, 0); // Prevent negative values
-      let waterBill = (100 * totalUnits);
-      waterBill +=100
+      let waterBill = (this.systemParams?.unit_cost * totalUnits);
+      waterBill +=this.systemParams?.base_value
     
       console.log(`Previous: ${prevReading}, Current: ${currentReading}, Units: ${totalUnits}, Bill: ${waterBill}`);
     
@@ -655,7 +681,7 @@ export class HomeComponent {
 
     let dialogRef = this.dialog.open(this.openUpdateHouseDial);
     dialogRef.afterClosed().subscribe(result => {
-        // Note: If the user clicks outside the dialog or presses the escape key, there'll be no result
+    
         if (result !== undefined) {
             if (result === 'yes') {
       
@@ -713,7 +739,7 @@ export class HomeComponent {
     console.log(houseObject)
     let dialogRef = this.dialog.open(this.deleteHouseDial);
     dialogRef.afterClosed().subscribe(result => {
-        // Note: If the user clicks outside the dialog or presses the escape key, there'll be no result
+    
         if (result !== undefined) {
             if (result === 'yes') {
               this.housesService.deleteHouses(id).subscribe(
@@ -756,7 +782,7 @@ export class HomeComponent {
     
     let dialogRef = this.dialog.open(this.openUpdateReceiptDialog);
     dialogRef.afterClosed().subscribe(result => {
-        // Note: If the user clicks outside the dialog or presses the escape key, there'll be no result
+    
         if (result !== undefined) {
             if (result === 'yes') {
             
@@ -796,7 +822,7 @@ export class HomeComponent {
 
     let dialogRef = this.dialog.open(this.deleteReceiptDial);
     dialogRef.afterClosed().subscribe(result => {
-        // Note: If the user clicks outside the dialog or presses the escape key, there'll be no result
+    
         if (result !== undefined) {
             if (result === 'yes') {
               this.receiptService.deleteReceipt(this.currentReceiptId).subscribe(
@@ -817,6 +843,52 @@ export class HomeComponent {
 
   }
 
+  updateSystemParameters(){
+    this.loadSystemParamsForm = true
+    if (this.systemParamsForm.valid){
+      console.log("Form Submitted!", this.systemParamsForm.value);
+      this.systemParamsService.updateSystemParams(this.systemParamsForm.value).subscribe(
+        (response) => {
+          this.toastr.success('System Parameters Update successfully!', 'Success');
+          this.dialog.closeAll();
+          this.getSystemParams();
+          this.loadSystemParamsForm = false
+          this.systemParamsForm.reset();
+        },
+        (error) => {
+          console.error("Error Updating user.", error);
+          this.toastr.error('Something went wrong!', 'Error');
+          this.loadSystemParamsForm = false
+        }
+      )
+    }
+    else{
+      console.log("Form has errors.")
+    }
+  }
+
+
+
+  openSystemSettings(){
+
+    this.systemParamsForm.patchValue({ unit_cost: this.systemParams?.unit_cost });
+    this.systemParamsForm.patchValue({ base_value: this.systemParams?.base_value });
+    let dialogRef = this.dialog.open(this.openSystParameterDial,{
+      width: '800px',
+      height: 'auto',
+      panelClass: 'receipt-preview-dialog'
+    });
+    dialogRef.afterClosed().subscribe(result => {
+    
+        if (result !== undefined) {
+            if (result === 'yes') {
+        
+            } else if (result === 'no') {
+               
+            }
+        }
+    })
+  }
 
 
 } 

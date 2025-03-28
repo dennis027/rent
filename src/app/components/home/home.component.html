@@ -1,5 +1,6 @@
 <nav class="navbar navbar-light bg-light">
     <a class="navbar-brand" href="#">New Era</a>
+    <mat-icon (click)="openSystemSettings()" matTooltip="System Parameters" style="margin-right: 30px ; cursor: pointer;">settings</mat-icon>
 </nav>
 
 <br><br>
@@ -842,4 +843,59 @@
       <button mat-button matDialogClose="no">No</button>
       <button mat-button matDialogClose="yes">Yes</button>
   </mat-dialog-actions>
+</ng-template>
+
+
+
+
+
+
+<ng-template #openSystParameterDial>
+  <div class="dialog-header">
+    <h2 matDialogTitle>System Parameters </h2> 
+    <mat-icon matDialogClose class="closeIcon">close</mat-icon> 
+  </div>
+  <p>&nbsp; &nbsp; &nbsp;Variables for the System Settings</p>
+  <form [formGroup]="systemParamsForm" (ngSubmit)="updateSystemParameters()" class="system-form">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-md-4">
+          <mat-form-field appearance="outline">
+            <mat-label>Water Base Charges</mat-label>
+            <input matInput type="text" formControlName="base_value" />
+            <mat-hint *ngIf="systemParamsForm.controls['base_value'].invalid && systemParamsForm.controls['base_value'].touched" class="error">
+              Water Base Charges is Required
+            </mat-hint>
+          </mat-form-field>
+        </div>
+        <div class="col-md-4">
+          <mat-form-field appearance="outline">
+            <mat-label>Water Unit Cost</mat-label>
+            <input matInput type="text" formControlName="unit_cost" />
+            <mat-hint *ngIf="systemParamsForm.controls['unit_cost'].invalid && systemParamsForm.controls['unit_cost'].touched" class="error">
+              Water unit cost is required
+            </mat-hint>
+          </mat-form-field>
+        </div>
+
+        <div class="col-md-4"> <br>
+          <button mat-raised-button color="primary" type="submit" class="submit" [disabled]="systemParamsForm.invalid || loadSystemParamsForm">Submit</button>
+        
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-4">
+
+        </div>
+        <div class="col-md-4">
+          
+        </div>
+          <div class="col-md-4">
+          
+        </div>
+      </div>
+    </div>
+  </form>
+  
+
 </ng-template>
