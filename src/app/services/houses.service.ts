@@ -25,5 +25,13 @@ export class HousesService {
     return this.http.post(`${this.apiUrl}houses/`, data);
   }
 
+  updateHouse(id: number, data: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}houses/${id}/`, data);
+  }
+  deleteHouses(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}houses/${id}/`);
+  }
+
+
 
 }

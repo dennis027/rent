@@ -59,16 +59,31 @@ export class HomeComponent {
 
 
   userForm!: FormGroup;
+  userUpdateForm!:FormGroup
   houseForm!: FormGroup;
+  houseUpdateForm!:FormGroup
   receiptForm!: FormGroup;
+  receiptUpdateForm!:FormGroup
+  
 
   loadUserForm:boolean=false
+  loadUserUpdateForm:boolean=false
   loadHousesForm:boolean = false
+  loadHousesUpdateForm:boolean=false
   loadReceiptForm:boolean =false
+  loadReceiptUpdateForm:boolean=false
   @ViewChild('addReceiptDialog') addReceiptDialog!: TemplateRef<any>;
   @ViewChild('addHouseDialog') addHouseDialog!: TemplateRef<any>;
   @ViewChild('addUsersDialog') addUsersDialog!: TemplateRef<any>;
   @ViewChild('receiptPreviewDialog') receiptPreviewDialog!: TemplateRef<any>;
+  @ViewChild('updateUserDialog') updateUserDialog!: TemplateRef<any>;
+  @ViewChild('openUpdateHouseDial') openUpdateHouseDial!: TemplateRef<any>;
+  @ViewChild('openUpdateReceiptDialog') openUpdateReceiptDialog!: TemplateRef<any>;
+  @ViewChild('deleteUserDial') deleteUserDial!: TemplateRef<any>;
+  @ViewChild('deleteHouseDial') deleteHouseDial!: TemplateRef<any>;
+  @ViewChild('deleteReceiptDial') deleteReceiptDial!: TemplateRef<any>;
+
+
 
   @ViewChild('receiptPreview', { static: false }) receiptPreview!: ElementRef;
 
@@ -82,6 +97,10 @@ export class HomeComponent {
   receiptClientName:any
 
   houseNameNo:any
+
+  currentID:any
+  currentHouseID:any
+  currentReceiptId:any
 
 
 
@@ -112,12 +131,12 @@ export class HomeComponent {
 
 
   usersObject: usersObjects[] = [];
-  displayedUserColumns: string[] = ['id', 'username', 'national_id', 'phone_number'];
+  displayedUserColumns: string[] = ['id', 'username', 'national_id', 'phone_number','actions'];
   dataUsersSource = new MatTableDataSource<usersObjects>(this.usersObject);
 
 
   housesObject: housesObject[] = []; 
-  displayedHosesColumns: string[] = ['id', 'house_number','last_reading', 'due_date', 'rent_amount'];
+  displayedHosesColumns: string[] = ['id', 'house_number','last_reading', 'due_date', 'rent_amount','actions'];
   dataHousesSource = new MatTableDataSource<housesObject>(this.housesObject);
 
 
@@ -143,11 +162,22 @@ export class HomeComponent {
       this.getUserForm();
       this.getHouseForm();
       this.getReceiptForm();
+      this.getUserUpdateForm();
+      this.getHouseUpdateForm();
+      this.getReceiptUpdateForm();
     }
 
     getUserForm(){
       
       this.userForm = this.fb.group({
+        username: ['', [Validators.required, Validators.minLength(3)]],
+        national_id: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
+        phone_number: ['', [Validators.required, Validators.pattern(/^(07|01)\d{8}$/)]]
+      });
+    }
+    getUserUpdateForm(){
+      
+      this.userUpdateForm = this.fb.group({
         username: ['', [Validators.required, Validators.minLength(3)]],
         national_id: ['', [Validators.required, Validators.pattern(/^\d{8}$/)]],
         phone_number: ['', [Validators.required, Validators.pattern(/^(07|01)\d{8}$/)]]
@@ -161,8 +191,36 @@ export class HomeComponent {
         last_reading: [0, [Validators.required, Validators.min(0)]], // Min last reading 0
       });
     }
+    getHouseUpdateForm(){
+      this.houseUpdateForm = this.fb.group({
+        house_number: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9]+$/)]], // Alphanumeric
+        due_date: ['', [Validators.required]], // Future date validation done in submit function
+        rent_amount: [0, [Validators.required, Validators.min(1000)]], // Min rent 1000
+        last_reading: [0, [Validators.required, Validators.min(0)]], // Min last reading 0
+      });
+    }
     getReceiptForm(){
       this.receiptForm = this.fb.group({
+        client: [null, Validators.required],  // Dropdown should be null
+        house: [null, Validators.required],   // Dropdown should be null
+        monthly_rent: [0, [Validators.required, Validators.min(1)]], 
+        rental_deposit: [0, [Validators.required, Validators.min(0)]],
+        electricity_deposit: [0, [Validators.required, Validators.min(0)]],
+        electricity_bill: [0, [Validators.required, Validators.min(0)]],
+        water_deposit: [0, [Validators.required, Validators.min(0)]],
+        water_bill: [0, [Validators.required, Validators.min(0)]],
+        service_charge: [0, [Validators.required, Validators.min(0)]],
+        security_charge: [0, [Validators.required, Validators.min(0)]],
+        previous_balance: [0, [Validators.required, Validators.min(0)]],
+        other_charges: [0, [Validators.required, Validators.min(0)]],
+        previous_water_reading: [null, Validators.required],
+        current_water_reading: [null, Validators.required],
+      });
+    }
+
+
+    getReceiptUpdateForm(){
+      this.receiptUpdateForm = this.fb.group({
         client: [null, Validators.required],  // Dropdown should be null
         house: [null, Validators.required],   // Dropdown should be null
         monthly_rent: [0, [Validators.required, Validators.min(1)]], 
@@ -293,6 +351,20 @@ export class HomeComponent {
       console.log(`Previous: ${prevReading}, Current: ${currentReading}, Units: ${totalUnits}, Bill: ${waterBill}`);
     
       this.receiptForm.patchValue({ water_bill: waterBill });
+    }
+    
+
+    calculateUpdatesWaterBill() {
+      const prevReading = Number(this.receiptUpdateForm.get('previous_water_reading')?.value) || 0;
+      const currentReading = Number(this.receiptUpdateForm.get('current_water_reading')?.value) || 0;
+    
+      const totalUnits = Math.max(currentReading - prevReading, 0); // Prevent negative values
+      let waterBill = (100 * totalUnits);
+      waterBill +=100
+    
+      console.log(`Previous: ${prevReading}, Current: ${currentReading}, Units: ${totalUnits}, Bill: ${waterBill}`);
+    
+      this.receiptUpdateForm.patchValue({ water_bill: waterBill });
     }
     
 
@@ -494,5 +566,257 @@ export class HomeComponent {
     console.log(houseObject)
     this.receiptForm.patchValue({ monthly_rent: houseObject?.rent_amount });
     this.receiptForm.patchValue({ previous_water_reading: houseObject?.last_reading });
+  
   }
+
+
+  updateUser(id:any){
+    console.log(id)
+    const userObject = this.dataUsersSource.data.find(house => house.id === id);
+    this.userUpdateForm.patchValue({ username: userObject?.username });
+    this.userUpdateForm.patchValue({ national_id: userObject?.national_id });
+    this.userUpdateForm.patchValue({ phone_number: userObject?.phone_number });
+    this.currentID = id
+    let dialogRef = this.dialog.open(this.updateUserDialog);
+    dialogRef.afterClosed().subscribe(result => {
+        if (result !== undefined) {
+            if (result === 'yes') {
+      
+            } else if (result === 'no') {
+     
+            }
+        }
+    })
+  }
+
+  submitUserUpdateForm() {
+
+    this.loadUserUpdateForm =true
+    if (this.userUpdateForm.valid) {
+      console.log("Form Submitted!", this.userUpdateForm.value);
+      this.clientService.updateUser(this.currentID,this.userUpdateForm.value).subscribe(
+        (response) => {
+          this.toastr.success('User Update successfully!', 'Success');
+          this.dialog.closeAll();
+          this.getUsersData();
+          this.loadUserUpdateForm = false
+          this.userUpdateForm.reset();
+        },
+        (error) => {
+          console.error("Error Updating user.", error);
+          this.toastr.error('Something went wrong!', 'Error');
+          this.loadUserUpdateForm = false
+        }
+      )
+    } else {
+      console.log("Form has errors.");
+    }
+  }
+
+  deleteUser(id:any){
+    console.log(id)
+    const userObject = this.dataUsersSource.data.find(house => house.id === id);
+    console.log(userObject)
+    let dialogRef = this.dialog.open(this.deleteUserDial);
+    dialogRef.afterClosed().subscribe(result => {
+
+        if (result !== undefined) {
+            if (result === 'yes') {
+            
+              this.clientService.deleteUser(id).subscribe(
+                (response) => {
+                  this.toastr.success('User Deleted successfully!', 'Success');
+                  this.getUsersData();
+                },
+                (error) => {
+                  console.error("Error deleting user.", error);
+                  this.toastr.error('Something went wrong!', 'Error');
+                }
+              )
+          
+            } else if (result === 'no') {
+          
+            }
+        }
+    })
+  }
+
+
+  updateHouses(id:any){
+    const houseObject = this.dataHousesSource.data.find(house => house.id === id);
+    console.log(houseObject)
+
+    this.houseUpdateForm.patchValue({ house_number: houseObject?.house_number });
+    this.houseUpdateForm.patchValue({ due_date: houseObject?.due_date });
+    this.houseUpdateForm.patchValue({ rent_amount: houseObject?.rent_amount });
+    this.houseUpdateForm.patchValue({ last_reading: houseObject?.last_reading });
+
+    this.currentHouseID = id
+
+    let dialogRef = this.dialog.open(this.openUpdateHouseDial);
+    dialogRef.afterClosed().subscribe(result => {
+        // Note: If the user clicks outside the dialog or presses the escape key, there'll be no result
+        if (result !== undefined) {
+            if (result === 'yes') {
+      
+            } else if (result === 'no') {
+    
+            }
+        }
+    })
+
+  }
+
+  submitHouseUpdateForm(){
+    this.loadHousesUpdateForm = true
+    if (this.houseUpdateForm.valid) {
+      const formData = this.houseUpdateForm.value;
+      console.log('Form Submitted:', formData);
+
+      // Ensure due_date is a future date
+      const today = new Date();
+      const selectedDate = new Date(formData.due_date);
+      if (selectedDate <= today) {
+        alert('Due date must be a future date.');
+        return;
+      }
+
+      const data = {
+        house_number: formData.house_number,
+        due_date: this.formatDate(selectedDate),
+        rent_amount: formData.rent_amount,
+        client_id: formData.client_id
+      }
+      
+      this.housesService.updateHouse(this.currentHouseID,data).subscribe(
+        (response) => {
+          this.toastr.success('House Updated successfully!', 'Success');
+          this.getHousesData();
+          this.loadHousesUpdateForm = false
+          this.dialog.closeAll()
+          this.houseUpdateForm.reset();
+        },
+        (error) => {
+          console.error("Error adding user.", error);
+          this.toastr.error('Something went wrong!', 'Error');
+          this.loadHousesUpdateForm = false
+        }
+      )
+
+
+      console.log('Validated Data:', formData);
+    }
+  }
+
+  deleteHouses(id:any){
+    const houseObject = this.dataHousesSource.data.find(house => house.id === id);
+    console.log(houseObject)
+    let dialogRef = this.dialog.open(this.deleteHouseDial);
+    dialogRef.afterClosed().subscribe(result => {
+        // Note: If the user clicks outside the dialog or presses the escape key, there'll be no result
+        if (result !== undefined) {
+            if (result === 'yes') {
+              this.housesService.deleteHouses(id).subscribe(
+                (response) => {
+                  this.toastr.success('House Deleted successfully!', 'Success');
+                  this.getHousesData();
+                },
+                (error) => {
+                  console.error("Error deleting user.", error);
+                  this.toastr.error('Something went wrong!', 'Error');
+                }
+              )
+            } else if (result === 'no') {
+                // TODO: Replace the following line with your code.
+                console.log('User clicked no.');
+            }
+        }
+    })
+
+
+    
+  }
+
+  getReceiptId(id:any){
+    this.currentReceiptId = id.receipt_number
+    this.receiptUpdateForm.patchValue({ client: id?.client });
+    this.receiptUpdateForm.patchValue({ house: id?.house });
+    this.receiptUpdateForm.patchValue({ monthly_rent: id?.monthly_rent });
+    this.receiptUpdateForm.patchValue({ rental_deposit: id?.rental_deposit });
+    this.receiptUpdateForm.patchValue({ electricity_deposit: id?.electricity_deposit });
+    this.receiptUpdateForm.patchValue({ electricity_bill: id?.electricity_bill });
+    this.receiptUpdateForm.patchValue({ water_deposit: id?.water_deposit });
+    this.receiptUpdateForm.patchValue({ water_bill: id?.water_bill });
+    this.receiptUpdateForm.patchValue({ service_charge: id?.service_charge });
+    this.receiptUpdateForm.patchValue({ security_charge: id?.security_charge });
+    this.receiptUpdateForm.patchValue({ previous_balance: id?.previous_balance });
+    this.receiptUpdateForm.patchValue({ other_charges: id?.other_charges });
+    this.receiptUpdateForm.patchValue({ previous_water_reading: id?.previous_water_reading });
+    this.receiptUpdateForm.patchValue({ current_water_reading: id?.current_water_reading });
+    
+    let dialogRef = this.dialog.open(this.openUpdateReceiptDialog);
+    dialogRef.afterClosed().subscribe(result => {
+        // Note: If the user clicks outside the dialog or presses the escape key, there'll be no result
+        if (result !== undefined) {
+            if (result === 'yes') {
+            
+            } else if (result === 'no') {
+          
+            }
+        }
+    })
+  }
+
+  submitReceiptUpdateForm(){
+    this.loadReceiptUpdateForm = true
+    if (this.receiptUpdateForm.valid) {
+      console.log("Form Submitted!", this.receiptUpdateForm.value);
+      this.receiptService.updateReceipt(this.currentReceiptId,this.receiptUpdateForm.value).subscribe(
+        (response) => {
+          this.toastr.success('Receipt Update successfully!', 'Success');
+          this.dialog.closeAll();
+          this.getReceiptData();
+          this.loadReceiptUpdateForm = false
+          this.receiptUpdateForm.reset();
+        },
+        (error) => {
+          console.error("Error Updating user.", error);
+          this.toastr.error('Something went wrong!', 'Error');
+          this.loadReceiptUpdateForm = false
+        }
+      )
+    } else {
+      console.log("Form has errors.");
+    }
+  }
+
+  deleteReceipt(id:any){
+    this.currentReceiptId = id.receipt_number
+    console.log(this.currentReceiptId)
+
+    let dialogRef = this.dialog.open(this.deleteReceiptDial);
+    dialogRef.afterClosed().subscribe(result => {
+        // Note: If the user clicks outside the dialog or presses the escape key, there'll be no result
+        if (result !== undefined) {
+            if (result === 'yes') {
+              this.receiptService.deleteReceipt(this.currentReceiptId).subscribe(
+                (response) => {
+                  this.toastr.success('Receipt Deleted successfully!', 'Success');
+                  this.getReceiptData();
+                },
+                (error) => {
+                  console.error("Error deleting user.", error);
+                  this.toastr.error('Something went wrong!', 'Error');
+                }
+              )
+            } else if (result === 'no') {
+
+            }
+        }
+    })
+
+  }
+
+
+
 } 
