@@ -19,9 +19,23 @@ Built with **Django** (backend) and **Flutter/Angular/React** (frontend).
 ### Dashboard
 ![Dashboard Screenshot](screenshots/dashboard.png)
 
-### Tenant Management
+### User Management
+![Tenant Management Screenshot](https://github.com/dennis027/rent/blob/main/public/screenshots/screen3.png
+)
+
+### Houses Management
+![Tenant Management Screenshot](https://github.com/dennis027/rent/blob/main/public/screenshots/screen2.png
+)
+
+### Recepts Management
 ![Tenant Management Screenshot](https://github.com/dennis027/rent/blob/main/public/screenshots/screen1.png
 )
+
+### Recepts Preview
+![Tenant Management Screenshot](https://github.com/dennis027/rent/blob/main/public/screenshots/receipt_preview.png
+)
+
+
 
 
 
