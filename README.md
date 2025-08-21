@@ -20,7 +20,10 @@ Built with **Django** (backend) and **Flutter/Angular/React** (frontend).
 ![Dashboard Screenshot](screenshots/dashboard.png)
 
 ### Tenant Management
-![Tenant Management Screenshot](new-era/public/screenshots/screen1.png)
+![Tenant Management Screenshot](https://github.com/dennis027/rent/blob/main/public/screenshots/screen1.png
+https://github.com/dennis027/rent/blob/main/public/screenshots/screen2.png
+https://github.com/dennis027/rent/blob/main/public/screenshots/screen3.png
+)
 
 
 
